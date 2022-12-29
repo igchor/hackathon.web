@@ -1,0 +1,73 @@
+{{top "Memory accessing example"}}
+
+<p class="intro">
+
+In this example you'll learn how to discover available memory on the system and how to
+utilze it. This example assumes that you are familiar with a concept of NUMA node.
+
+<p>
+
+If you're not, take a look at: https://www.kernel.org/doc/html/latest/admin-guide/mm/numaperf.html
+
+{{step "Using hwloc to discover available memory and it's charactersistics"}}
+
+<p>
+
+The following scripts prints list of available NUMA nodes and their characteristics.
+Those characteristics can be used by an application to decide where to put certain data,
+to minimize access latency or maximize bandwith.
+
+{{edit "run_hwloc.sh"}}
+
+<p>
+
+Run the example by clicking the button below:
+
+{{run "./run_hwloc.sh"}}
+
+<p>
+
+{{step "Using libnuma to allocate memory from a specific numa node and memkind to allocate memory with desired charactersistics"}}
+
+<p>
+
+Since you already know how to query memory characteristic from the command line, let's look at a code example.
+
+<p>
+"numa.c" shows how to use libnum library to find a numa node with highest capacity and allocate memory from it.
+<p>
+"memkind.c" ilustrates how to allocate memory with desired characteristics withouth knowing the numa node id.
+<p>
+"numa_helpers.h" contain helpers functions to find appropriate numa node and verify where specific page resides.
+
+{{edit "numa.c" "numa_helpers.h" "memkind.c" "Makefile"}}
+
+<p>
+
+{{build "make"}}
+
+<p>
+If the programs built without errors, continue on to the next step below.
+
+{{step "Run"}}
+
+<p>
+
+Of course, you should feel free to edit the script below and run it
+again and again, to experiment with different commands.
+
+{{edit "run_examples.sh"}}
+
+<p>
+Now you can try running the program using the above commands.
+
+{{run "./run_examples.sh"}}
+
+{{summary}}
+
+<p>
+
+This example showed how to discover available memory on the system and how to utilze it using
+native linux calls and using memkind.
+
+{{bottom}}
