@@ -31,6 +31,9 @@ RUN dnf install -y \
 	numactl-devel \
 	libtool
 
+COPY ./cachelib-pre.sh ./cachelib-pre.sh
+RUN ./cachelib-pre.sh
+
 COPY ./cachelib.sh ./cachelib.sh
 RUN ./cachelib.sh
 
