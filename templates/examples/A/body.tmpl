@@ -13,9 +13,9 @@ If you're not, take a look at: https://www.kernel.org/doc/html/latest/admin-guid
 
 <p>
 
-The following scripts prints list of available NUMA nodes and their characteristics.
-Those characteristics can be used by an application to decide where to put certain data,
-to minimize access latency or maximize bandwith.
+The following scripts prints list of available NUMA nodes and their characteristics using hwloc library.
+Those characteristics can be used by an application to decide where to put certain data, to minimize access
+latency or maximize bandwith.
 
 {{edit "run_hwloc.sh"}}
 
@@ -27,20 +27,18 @@ Run the example by clicking the button below:
 
 <p>
 
-{{step "Using libnuma to allocate memory from a specific numa node and memkind to allocate memory with desired charactersistics"}}
+{{step "Using libnuma to perform coarse-grain memory allocation from a specific numa node"}}
 
 <p>
 
 Since you already know how to query memory characteristic from the command line, let's look at a code example.
 
 <p>
-"numa.c" shows how to use libnum library to find a numa node with highest capacity and allocate memory from it.
-<p>
-"memkind.c" ilustrates how to allocate memory with desired characteristics withouth knowing the numa node id.
+"numa.c" shows how to use libnum library to find a numa node with highest capacity and allocate page-aligned memory from it.
 <p>
 "numa_helpers.h" contain helpers functions to find appropriate numa node and verify where specific page resides.
 
-{{edit "numa.c" "numa_helpers.h" "memkind.c" "Makefile"}}
+{{edit "numa.c" "numa_helpers.h" "Makefile"}}
 
 <p>
 

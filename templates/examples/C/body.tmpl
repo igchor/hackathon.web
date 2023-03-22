@@ -1,0 +1,158 @@
+{{top "CacheLib example"}}
+
+<p class="intro">
+
+{{step "CacheLib code example"}}
+
+<p>
+
+This example presents how NUMA system can be utilized by a caching engine, specifically CacheLib, and
+demonstrates memory tiering concept.
+
+<p>
+
+Memory tiering can be implemented on multiple levels: inside the application, in the linux kernel or both.
+This example focuses on application-level memory tiering. However, this might not be the best choice for
+all use cases. To learn more about the differences you can read the following blogs that discuss tiering
+in memkind: 
+
+<p>
+
+https://pmem.io/blog/2022/06/memory-tiering-part-1/
+
+<p>
+
+https://pmem.io/blog/2022/06/memory-tiering-part-2-writing-transparent-tiering-solution/
+
+<p>
+<p>
+
+You can also read more about the caching engine we'll be using (CacheLib) here: https://cachelib.org/.
+
+<p>
+
+In this example user still needs to be aware of the NUMA capabilities (e.g. to find appropriate NUMA node) so knowledge
+from the previous example will be useful.
+
+<p>
+
+Below is a code example that creates a cache instance using memory from a single NUMA node.
+
+Feel free to edit it and experiment with the example. You can try to combine it with the logic from
+the example A.
+
+{{edit "basic.cpp" "build.sh"}}
+
+<p>
+
+{{build "./build.sh"}}
+
+<p>
+If the programs built without errors, continue on to the next step below.
+
+{{step "Run"}}
+
+<p>
+
+Of course, you should feel free to edit the script below and run it
+again and again, to experiment with different commands.
+
+{{edit "run.sh"}}
+
+<p>
+Now you can try running the program using the above commands.
+
+{{run "./run.sh"}}
+
+<p>
+
+{{step "Multi-tier CacheLib"}}
+
+<p>
+
+You can instruct CacheLib to use multiple memory tiers by modyfing 'configureMemoryTiers' function call.
+
+TODO: fix formatting
+<p>
+
+configureMemoryTiers(
+    {MemoryTierCacheConfig::fromShm().setRatio(1).setMemBind(NumaBitMask().setBit(0)),
+    MemoryTierCacheConfig::fromShm().setRatio(1).setMemBind(NumaBitMask().setBit(1))})
+
+<p>
+
+When multiple memory tiers are used (currently only up to 2 tiers are supported) a memory for new item can
+be allocated from either of them. When there is no more free space left for new items, some item is evicted.
+
+<p>
+
+In a legacy design, in case of eviciton, the item would be either written to a NVMe device or removed.
+In case of multi-tier configuration, item is first moved to the second memory tier. This design encourages
+using fast memory (e.g. DRAM) as a first tier and slow (but possibly bigger) memory as a second tier.
+
+<p>
+
+{{step "Background data movement"}}
+
+<p>
+
+One of the goals of CacheLib is to make sure that 'hot' (frequently accessed) data is fast to access.
+Since memory for new item can be allocated from any tier and items can be evicted there is a need for promotion mechanism as well.
+
+<p>
+
+Promoting an item from slower to faster memory on a critical path could lead to very high latency spikes.
+Intead, CacheLib provides support for background movers that can move data between tiers transparently.
+
+<p>
+
+TODO: add this to develop???
+https://github.com/intel/CacheLib/blob/a2721d1d88836ce4dcd179afa8348c95b46a3763/MultiTierDataMovement.md
+
+<p>
+
+{{step "CacheLib heterogenous memory benchmark"}}
+
+<p>
+
+CacheLib comes with it's own benchmarking tool - cachebench. Below you can find a sample bnench config.
+Note the "memoryTiers" part - it configures CacheLib so that it will use two memory tiers (of equal sizes).
+
+Feel free to experiment with that.
+
+{{edit "bench_config.json" "run_benchmark.sh"}}
+
+<p>
+
+Of course, you should feel free to edit the script below and run it
+again and again, to experiment with different commands.
+
+{{edit "run_benchmark.sh"}}
+
+<p>
+Now you can try running the program using the above commands. Depending on the bench config, this can take a while.
+To speed the execution try decresing number of operations and keys in the bench_config.json file.
+
+<p>
+
+You can also go to the shell directly (by cliking the menu button on the top left and selecting "Shell Window") and
+execute the benchmark there.
+
+<p>
+
+Since this system might be shared by multiple users, the performance results will vary.
+
+{{run "./run_benchmark.sh"}}
+
+{{summary}}
+
+<p>
+
+This example showed how a caching solution, like Cachelib can utilize heterogenous memory.
+
+<p>
+
+By running provided bench config you might have observed difference in performance when using memory
+from different NUMA nodes.
+
+{{bottom}}
