@@ -2,18 +2,25 @@
 
 <p class="intro">
 
-In this example you'll learn how to simplify memory allocation using memkind library. It builds on a previous
-exaple and reuses some of the code.
+In this example you'll learn how to simplify memory allocation using memkind library. It builds on a previous exaple and reuses some of the code presented there.
+
+<p>
+Memkind library is a user extensible heap manager built on top of jemalloc which enables control of memory characteristics and a partitioning of the heap between kinds of memory.
+<p>
+Memkind provides a higher-level API than the one presented in the previous example. Unlike mmap, memkind can be used for fine-grain allocations.
+
+<p>
+To learn more about memkind, visit:
+<p>
+https://pmem.io/blog/2021/05/memkind-support-for-heterogeneous-memory-attributes/
+<p>
+https://github.com/memkind/memkind
 
 <p>
 
 {{step "Using memkind to allocate memory with desired charactersistics"}}
 
 <p>
-
-The following scripts prints list of available NUMA nodes and their characteristics.
-Those characteristics can be used by an application to decide where to put certain data,
-to minimize access latency or maximize bandwith.
 
 <p>
 "memkind.c" ilustrates how to allocate memory with desired characteristics withouth knowing the numa node id.
@@ -47,7 +54,6 @@ Now you can try running the program using the above commands.
 
 <p>
 
-This example showed how to discover available memory on the system and how to utilze it using
-native linux calls and using memkind.
+This example showed how to allocate memory with different characteristics using memkind.
 
 {{bottom}}

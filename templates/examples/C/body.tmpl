@@ -11,10 +11,10 @@ demonstrates memory tiering concept.
 
 <p>
 
-Memory tiering can be implemented on multiple levels: inside the application, in the linux kernel or both.
+Memory tiering can be implemented on multiple levels: for example inside the application, supervisor or a linux kernel.
 This example focuses on application-level memory tiering. However, this might not be the best choice for
 all use cases. To learn more about the differences you can read the following blogs that discuss tiering
-in memkind: 
+in memkind:
 
 <p>
 
@@ -27,12 +27,19 @@ https://pmem.io/blog/2022/06/memory-tiering-part-2-writing-transparent-tiering-s
 <p>
 <p>
 
-You can also read more about the caching engine we'll be using (CacheLib) here: https://cachelib.org/.
+You can also read more about the caching engine we'll be using (CacheLib) here: https://cachelib.org/. Code that includes support for memory tiering can be found here: https://github.com/intel/CacheLib/tree/develop 
 
 <p>
 
 In this example user still needs to be aware of the NUMA capabilities (e.g. to find appropriate NUMA node) so knowledge
 from the previous example will be useful.
+
+<p>
+The idea of memory tiering in CacheLib is showed below:
+<img src="/img/examples/CacheLibArch.png" class="figure">
+
+<p>
+Instead of using only DRAM, we can use a combination of memory with different characteristics (like CXL or PMEM). This allows us to achieve higher capacity at a lower cost.
 
 <p>
 
@@ -71,13 +78,13 @@ Now you can try running the program using the above commands.
 <p>
 
 You can instruct CacheLib to use multiple memory tiers by modyfing 'configureMemoryTiers' function call.
-
-TODO: fix formatting
 <p>
 
+<code>
 configureMemoryTiers(
     {MemoryTierCacheConfig::fromShm().setRatio(1).setMemBind(NumaBitMask().setBit(0)),
     MemoryTierCacheConfig::fromShm().setRatio(1).setMemBind(NumaBitMask().setBit(1))})
+</code>
 
 <p>
 
@@ -105,9 +112,7 @@ Promoting an item from slower to faster memory on a critical path could lead to 
 Intead, CacheLib provides support for background movers that can move data between tiers transparently.
 
 <p>
-
-TODO: add this to develop???
-https://github.com/intel/CacheLib/blob/a2721d1d88836ce4dcd179afa8348c95b46a3763/MultiTierDataMovement.md
+https://github.com/intel/CacheLib/blob/35db85bab8bf26bedd8f4c52d3373c5f1a5bc08d/MultiTierDataMovement.md
 
 <p>
 
@@ -115,7 +120,7 @@ https://github.com/intel/CacheLib/blob/a2721d1d88836ce4dcd179afa8348c95b46a3763/
 
 <p>
 
-CacheLib comes with it's own benchmarking tool - cachebench. Below you can find a sample bnench config.
+CacheLib comes with it's own benchmarking tool - cachebench. Below you can find a sample bench config.
 Note the "memoryTiers" part - it configures CacheLib so that it will use two memory tiers (of equal sizes).
 
 Feel free to experiment with that.
@@ -149,10 +154,5 @@ Since this system might be shared by multiple users, the performance results wil
 <p>
 
 This example showed how a caching solution, like Cachelib can utilize heterogenous memory.
-
-<p>
-
-By running provided bench config you might have observed difference in performance when using memory
-from different NUMA nodes.
 
 {{bottom}}
