@@ -68,6 +68,9 @@ RUN dnf update -y && dnf install -y\
 	wget\
 	which\
 	xmvn\
+	tbb-devel\
+	cmake\
+	jemalloc-devel\
  && curl -sL https://rpm.nodesource.com/setup_10.x | bash - \
  && dnf install -y nodejs \
  && dnf debuginfo-install -y glibc \
