@@ -78,8 +78,6 @@ my $H = '/home/hackathon';
 
 # verify minimal environment exists
 die "$H directory not found\n" unless -d $H;
-die "/pmem0 directory not found\n" unless -d '/pmem0';
-die "/pmem1 directory not found\n" unless -d '/pmem1';
 die "$H/css directory not found\n" unless -d "$H/css";
 die "$H/img directory not found\n" unless -d "$H/img";
 die "$H/js directory not found\n" unless -d "$H/js";
@@ -91,15 +89,10 @@ my $passwd = `grep '^pmemuser[0-9][0-9]*:' /etc/passwd`;
 my $nopasswd = $? >> 8;
 die "no pmemuserX accounts in /etc/passwd\n" if $nopasswd;
 
-my @pmem_mounts = ('/pmem0', '/pmem1');
-
 for (my $id = $Lo; $id <= $Hi; $id++) {
 	my $thisid = $BASEID + $id;
 	my $user = "pmemuser$id";
 	say("enabling $user");
-	my $mount = $pmem_mounts[$id % 2];
-	my $pmemdir = "$mount/$user";
-	die "$pmemdir not found\n" unless -d "$pmemdir";
 	die "$H/users/$user not found\n" unless -d "$H/users/$user";
 
 	if ($Setpass) {
@@ -108,7 +101,7 @@ for (my $id = $Lo; $id <= $Hi; $id++) {
 
 	runy("echo 'enable_pmemusers: PMEMUSER_ID=$id'");
 
-	runy("docker run -t -d --ulimit nofile=1024:1024 --name=$user --env PMEMUSER_ID=$id -v $H/users/$user/shadow:/etc/shadow -v $H/users/$user/passwd:/etc/passwd -v $H/users/$user/group:/etc/group -v $H/users/$user/home:/home/$user -v $pmemdir:/pmem -u $thisid:$thisid --hostname=container$id --workdir=/home/$user --cap-add SYS_PTRACE --cap-add SYS_NICE --security-opt seccomp=scripts/seccomp.json --restart=unless-stopped $Image");
+	runy("docker run -t -d --ulimit nofile=1024:1024 --name=$user --env PMEMUSER_ID=$id -v $H/users/$user/shadow:/etc/shadow -v $H/users/$user/passwd:/etc/passwd -v $H/users/$user/group:/etc/group -v $H/users/$user/home:/home/$user -u $thisid:$thisid --hostname=container$id --workdir=/home/$user --cap-add SYS_PTRACE --cap-add SYS_NICE --security-opt seccomp=scripts/seccomp.json --restart=unless-stopped $Image");
 }
 
 say('done');

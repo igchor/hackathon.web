@@ -159,8 +159,6 @@ my $H = '/home/hackathon';
 
 # verify minimal environment exists
 die "$H directory not found\n" unless -d $H;
-die "/pmem0 directory not found\n" unless -d '/pmem0';
-die "/pmem1 directory not found\n" unless -d '/pmem1';
 die "$H/css directory not found\n" unless -d "$H/css";
 die "$H/img directory not found\n" unless -d "$H/img";
 die "$H/js directory not found\n" unless -d "$H/js";
@@ -179,15 +177,10 @@ umask 022;
 say("creating /home/hackathon/users");
 runy("mkdir -p /home/hackathon/users");
 
-my @pmem_mounts = ('/pmem0', '/pmem1');
-
 for (my $id = $Lo; $id <= $Hi; $id++) {
 	my $thisid = $BASEID + $id;
 	my $user = "pmemuser$id";
 	say("creating $user");
-	my $mount = $pmem_mounts[$id % 2];
-	my $pmemdir = "$mount/$user";
-	die "$pmemdir already exists\n" if -d "$pmemdir";
 	runy("mkdir -p $H/users/$user");
 	my $passwd_file = $Passwd_proto .
 "$user:x:$thisid:$thisid:pmem user $id:/home/$user:/bin/bash\n";
@@ -202,8 +195,6 @@ for (my $id = $Lo; $id <= $Hi; $id++) {
 	frans("$H/users/$user/group", $group_file);
 	runy("groupadd -g $thisid $user");
 	runy("useradd -u $thisid -g $thisid -d $H/users/$user/home -m -k $H/users.skel -s $H/hackathonsh $user");
-	runy("mkdir -p $pmemdir");
-	runy("chown $thisid:$thisid $pmemdir");
 	runy("cp -r --preserve=mode $H/$Repo $H/users/$user/home");
 	runy("chown -R $thisid:$thisid $H/users/$user/home/$Repo");
 }
